@@ -33,7 +33,34 @@ class Api::V1::TweetsController < ApplicationController
       end
     end
 
+    def retweet
+      @retweet = @tweet.retweets.create!(tweet_params)
+      json_response(@retweet, :created)
+    rescue ActiveRecord::RecordInvalid => e
+      json_response({ message: e.message }, :unprocessable_entity)
+    end
+
+    def quote_tweet
+      @retweet = @tweet.quote_tweets.create!(tweet_params)
+      json_response(@retweet, :created)
+    rescue ActiveRecord::RecordInvalid => e
+      json_response({ message: e.message }, :unprocessable_entity)
+    end
+
+    def reply_tweet
+      @retweet = @tweet.replies.create!(tweet_params)
+      json_response(@retweet, :created)
+    rescue ActiveRecord::RecordInvalid => e
+      json_response({ message: e.message }, :unprocessable_entity)
+    end
+
     private
+
+    def set_tweet
+      @tweet = Tweet.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      json_response({ message: 'Tweet not found' }, :not_found)
+    end
 
     def tweet_params
       params.require(:tweet).permit(:body)
