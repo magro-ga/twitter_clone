@@ -3,16 +3,28 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
   namespace :api do
     namespace :v1 do
-      resources :tweets, except: [:create, :edit, :delete]
-      resources :likes, except: [:create]
+      resources :tweets do
+        resources :comments
+        get 'comments', to: 'comments#index', on: :member, as: 'show_comments'
+      end
 
-      root to: "tweets#index"
+      resources :topics do
+        get 'tweets', on: :member
+      end
 
-      post '/tweets/:id/comments', to: 'tweets#comments', as: :comments
+      resources :tweets do
+        get 'topic/:id', action: :show_topic_posts, on: :collection, as: :topic_posts
+      end
+
+      resources :users, only: [:show, :index]
+
+      resources :comments
+      root to: "tweet#index"
+      post '/tweets/:id/retweets', to: 'tweets#retweet', as: :retweets
+      post '/tweets/:id/quote_tweets', to: 'tweets#quote_tweet', as: :quote_tweets
+      post '/tweets/:id/replies', to: 'tweets#reply_tweet', as: :replies
     end
   end
 end

@@ -10,33 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_23_172236) do
-  create_table "comments", force: :cascade do |t|
-    t.text "context"
+ActiveRecord::Schema[7.1].define(version: 2023_10_27_141856) do
+  create_table "bookmarks", force: :cascade do |t|
     t.integer "tweet_id", null: false
-    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["tweet_id"], name: "index_comments_on_tweet_id"
-    t.index ["user_id"], name: "index_comments_on_user_id"
+    t.index ["tweet_id"], name: "index_bookmarks_on_tweet_id"
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.integer "tweet_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tweet_id"], name: "index_likes_on_tweet_id"
   end
 
   create_table "tweets", force: :cascade do |t|
-    t.text "body"
-    t.integer "user_id", null: false
+    t.string "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_tweets_on_user_id"
+    t.integer "tweet_id"
+    t.boolean "is_retweet", default: false
+    t.boolean "is_quote_tweet", default: false
+    t.boolean "is_reply", default: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_foreign_key "comments", "tweets"
-  add_foreign_key "comments", "users"
-  add_foreign_key "tweets", "users"
+  add_foreign_key "bookmarks", "tweets"
+  add_foreign_key "likes", "tweets"
+  add_foreign_key "tweets", "tweets"
 end
